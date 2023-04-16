@@ -1,14 +1,19 @@
 server {
     listen 80;
-    listen [::]:80;
-    server_name localhost;
+    server_name example.com;
 
     location / {
-        # proxy_set_header Host $http_host;
+        proxy_pass https://www.google.com;
+        proxy_set_header Host www.google.com;
+        proxy_set_header Referer https://www.google.com;
+
+        proxy_set_header User-Agent $http_user_agent;
         proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header Accept-Encoding "";
+        proxy_set_header Accept-Language $http_accept_language;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_pass http://wheelb.nkp-hospital.go.th/;
-        rewrite /(.*) /$1  break;
+
+        sub_filter google.com example.com;
+        sub_filter_once off;
     }
 }
